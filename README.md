@@ -11,17 +11,19 @@ If you want to buy a router in purpose, I would recommend a tplink. You can flas
 
 2. SSH into your router. Under Linux run: "ssh root@[routerip]. Under Windows use Putty. The default port 22 is fine.
 
-3. type: "`opkg update`", "`opkg install python3`" and "`opkg install coreutils-nohup`" to install python and nohup.
+3. Download the script to the router "`wget -c https://raw.githubusercontent.com/AzagraMac/MineCryptoOnWifiRouter/main/entware-ngu-setup.sh`"
 
-4. Now edit line 14 to your username. If you want to use LEDs of your router as a indication if there was a accepted or declined share, go to line 16 and change variable 'enableLEDNotification' from ```False``` to ```True```  and set line 17 to the first led and line 18 to the second led. They're coments. You can get the led names by visiting the openwrt webinterface and going to system -> LED-Configuration. Pick 2 that are free..
+4. type: "`opkg update`", "`opkg install python3`" and "`opkg install coreutils-nohup`" to install python and nohup.
 
-5. Now use a program like <a  href="https://winscp.net/eng/download.php">Winscp</a> to get the miner.py script onto your router. Select SCP as protocol.
+5. Now edit line 14 to your username. If you want to use LEDs of your router as a indication if there was a accepted or declined share, go to line 16 and change variable 'enableLEDNotification' from ```False``` to ```True```  and set line 17 to the first led and line 18 to the second led. They're coments. You can get the led names by visiting the openwrt webinterface and going to system -> LED-Configuration. Pick 2 that are free..
 
-6. Then go back to putty and type "`python3 miner.py`", or "`nohup python3 -u miner.py > /tmp/mnt/sda1/miner.log 2>&1 &`"
+6. Now use a program like <a  href="https://winscp.net/eng/download.php">Winscp</a> to get the miner.py script onto your router. Select SCP as protocol.
 
-7. If everything seems to work, and the router is mining, press Ctrl + c and type "nohup python3 miner.py &". If it doesn't, open an issue.
+7. Then go back to putty and type "`python3 miner.py`", or "`nohup python3 -u miner.py > /tmp/mnt/sda1/miner.log 2>&1 &`"
 
-8. That's it! Your router is now mining crypto! Happy Mining!
+8. If everything seems to work, and the router is mining, press Ctrl + c and type "nohup python3 miner.py &". If it doesn't, open an issue.
+
+9. That's it! Your router is now mining crypto! Happy Mining!
 
   
 Officially tested Routers:
