@@ -30,7 +30,7 @@ Officially tested Routers:
 
 Model | Hashrate | Difficulty | Profit
 --- | --- | --- | ---
-Asus RT-AX58U | 42kH/s | 11000 | ~15-20 DUCO per day
+Asus RT-AX58U | 42kH/s | 2500 | ~15-20 DUCO per day
 
   
 How can I further develop this?
