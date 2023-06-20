@@ -5,6 +5,7 @@ export PATH=/opt/bin:/opt/sbin:/sbin:/bin:/usr/sbin:/usr/bin$PATH
 # Author: ryzhov_al
 # Adapted by TeHashX / contact@hqt.ro
 # Version: 3.1
+# Mod: AzagraMac v1.0
 
 BOLD="\033[1m"
 NORM="\033[0m"
@@ -84,6 +85,9 @@ case $PLATFORM in
     exit 1
     ;;
 esac
+
+echo -e "$INFO Creating /jffs scripts backup..."
+tar -czf "/tmp/mnt/sda1/jffs_backup_$(date +%F_%H-%M).tgz" /jffs/* >/dev/null
 
 echo -e "$INFO Looking for available partitions..."
 for mounted in $(/bin/mount | grep -E "$PART_TYPES" | cut -d" " -f3) ; do
@@ -183,9 +187,6 @@ fi
 echo -e "$INFO Creating /tmp/opt symlink..."
 ln -sf "$entFolder" /tmp/opt
 
-echo -e "$INFO Creating /jffs scripts backup..."
-tar -czf "$entPartition/jffs_scripts_backup_$(date +%F_%H-%M).tgz" /jffs/scripts/* >/dev/null
-
 echo -e "$INFO Modifying start scripts..."
 cat > /jffs/scripts/services-start << EOF
 #!/bin/sh
@@ -205,8 +206,7 @@ done
 EOF
 chmod +x /jffs/scripts/services-start
 
-cat > /jffs/scripts/services-stop << EOF
-#!/bin/sh
+cat >> /jffs/scripts/services-stop << EOF
 
 /opt/etc/init.d/rc.unslung stop
 EOF
@@ -215,18 +215,14 @@ chmod +x /jffs/scripts/services-stop
 cat > /jffs/scripts/post-mount << EOF
 #!/bin/sh
 
-if [ "\$1" = "__Partition__" ] ; then
-  ln -nsf \$1/$ENT_FOLD /tmp/opt
+if [ -f /tmp/mnt/sda1/file.swp ]
+then
+  echo -e "- Mounting swap file..."
+  swapon /tmp/mnt/sda1/file.swp
+else
+  echo -e "Swap file not found or /tmp/mnt/sda1 is not mounted..."
 fi
 
-sleep 2
-if [ -f /opt/swap ]
-then
-  echo -e "Mounting swap file..."
-  swapon /opt/swap
-else
-  echo -e "Swap file not found or /opt is not mounted..."
-fi
 EOF
 
 eval sed -i 's,__Partition__,$entPartition,g' /jffs/scripts/post-mount
@@ -235,7 +231,7 @@ chmod +x /jffs/scripts/post-mount
 cat > /jffs/scripts/unmount << 'EOF'
 #!/bin/sh
 
-awk '/SwapTotal/ {if($2>0) {system("swapoff /opt/swap")} else print "Swap not mounted"}' /proc/meminfo
+awk '/SwapTotal/ {if($2>0) {system("swapoff /tmp/mnt/sda1/file.swp")} else print "Swap not mounted"}' /proc/meminfo
 EOF
 chmod +x /jffs/scripts/unmount
 
@@ -257,42 +253,42 @@ do
     echo "SWAP FILE"
     echo "---------"
     echo "Choose swap file size (Highly Recommended)"
-    echo "1. 512MB"
-    echo "2. 1024MB"
-    echo "3. 2048MB (recommended for MySQL Server or PlexMediaServer)"	
+    echo "1. 1GB"
+    echo "2. 2GB"
+    echo "3. 4GB (recommended for MySQL Server or PlexMediaServer)"	
     echo "4. Skip this step, I already have a swap file / partition"
     echo "   or I don't want to create one right now"
     read -p "Enter your choice [ 1 - 4 ] " choice
     case "$choice" in
         1) 
-            echo -e "$INFO Creating a 512MB swap file..."
+            echo -e "$INFO Creating a 1GB swap file..."
             echo -e "$INFO This could take a while, be patient..."
-            dd if=/dev/zero of=/opt/swap bs=1024 count=524288
-            mkswap /opt/swap
-            chmod 0600 /opt/swap
-			swapon /opt/swap
+            dd if=/dev/zero of=/tmp/mnt/sda1/file.swp bs=1024 count=1048576
+            mkswap /tmp/mnt/sda1/file.swp
+            chmod 0600 /tmp/mnt/sda1/file.swp
+            swapon /tmp/mnt/sda1/file.swp
             read -p "Press [Enter] key to continue..." readEnterKey
 			free
 			break
             ;;
         2)
-            echo -e "$INFO Creating a 1024MB swap file..."
+            echo -e "$INFO Creating a 2GB swap file..."
             echo -e "$INFO This could take a while, be patient..."
-            dd if=/dev/zero of=/opt/swap bs=1024 count=1048576
-            mkswap /opt/swap
-            chmod 0600 /opt/swap
-			swapon /opt/swap
+            dd if=/dev/zero of=/tmp/mnt/sda1/file.swp bs=1024 count=2097152
+            mkswap /tmp/mnt/sda1/file.swp
+            chmod 0600 /tmp/mnt/sda1/file.swp
+			swapon /tmp/mnt/sda1/file.swp
             read -p "Press [Enter] key to continue..." readEnterKey
 			free
 			break
             ;;
         3)
-            echo -e "$INFO Creating a 2048MB swap file..."
+            echo -e "$INFO Creating a 4GB swap file..."
             echo -e "$INFO This could take a while, be patient..."
-            dd if=/dev/zero of=/opt/swap bs=1024 count=2097152
-            mkswap /opt/swap
-            chmod 0600 /opt/swap
-			swapon /opt/swap
+            dd if=/dev/zero of=/tmp/mnt/sda1/file.swp bs=1024 count=4194304
+            mkswap /tmp/mnt/sda1/file.swp
+            chmod 0600 /tmp/mnt/sda1/file.swp
+			swapon /tmp/mnt/sda1/file.swp
             read -p "Press [Enter] key to continue..." readEnterKey
 			free
 			break
